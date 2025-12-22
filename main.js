@@ -1,6 +1,7 @@
 const express = require("express");
 const multer = require("multer");
 const path = require("path");
+const cors = require("cors");
 
 
 const app = express();
@@ -8,6 +9,9 @@ const PORT = 8080;
 
 // pasta onde os .bin ficam
 const BIN_DIR = path.resolve('bins');
+
+// cors
+app.use(cors())
 
 // servir arquivos estáticos
 app.use('/bins', express.static(BIN_DIR));
