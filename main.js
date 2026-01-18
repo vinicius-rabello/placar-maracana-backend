@@ -1,40 +1,23 @@
-const express = require("express");
-const multer = require("multer");
-const path = require("path");
-const cors = require("cors");
+const express = require('express');
+const displayService = require('./services/displayService');
 
 const app = express();
-const PORT = 8080;
+app.use(express.json());
 
-// pasta onde os .bin ficam
-const BIN_DIR = path.resolve("bins");
-
-// cors
-app.use(cors());
-
-// servir arquivos estáticos
-app.use("/bins", express.static(BIN_DIR));
-
-// ===== multer com nome fixo =====
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, BIN_DIR);
-  },
-  filename: (req, file, cb) => {
-    cb(null, "display.bin"); // 👈 nome fixo
-  }
+// Endpoint para o front salvar config
+app.post('/config', (req, res) => {
+    const config = displayService.updateConfig(req.body);
+    res.json({ success: true, config });
 });
 
-const upload = multer({ storage });
-
-app.post("/upload", upload.single("file"), (req, res) => {
-  res.json({
-    ok: true,
-    filename: req.file.filename,
-    url: `/bins/${req.file.filename}`
-  });
+// Endpoint para o ESP pegar o .bin
+app.post('/display', async (req, res) => {
+    const bin = await displayService.generateBinary();
+    res.setHeader('Content-Type', 'application/octet-stream');
+    res.send(bin);
 });
 
-app.listen(PORT, () => {
-  console.log(`Servidor rodando em http://localhost:${PORT}`);
+// Inicializar
+displayService.initialize().then(() => {
+    app.listen(3000, () => console.log('Servidor rodando'));
 });
