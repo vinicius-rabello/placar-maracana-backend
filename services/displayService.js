@@ -6,7 +6,7 @@ const CHAR_SPACING = 1;
 const DISPLAY_WIDTH = 256;
 const DISPLAY_HEIGHT = 64;
 const SCORE_MARGIN = 20;
-const CLOCK_X = 64;
+const CLOCK_X = 100;
 const CLOCK_Y = 28;
 
 // Classe para simular o display de pixels
@@ -53,22 +53,6 @@ class DisplayService {
             homeScore: '',
             awayScore: ''
         };
-    }
-
-    // Carregar logo do Maracanã
-    async loadMaracana() {
-        try {
-            const data = await fs.readFile(
-                path.join(__dirname, '../assets/bitfiles/maracana.json'),
-                'utf8'
-            );
-            const json = JSON.parse(data);
-            this.maracanaData = json.bitlines;
-            return this.maracanaData;
-        } catch (error) {
-            console.error('Erro ao carregar Maracanã:', error);
-            return null;
-        }
     }
 
     // Carregar imagem
@@ -158,7 +142,7 @@ class DisplayService {
         for (let char of text.toUpperCase()) {
             const bitlines = await this.loadChar(char);
             const charWidth = this.drawChar(display, bitlines, currentX, startY);
-            currentX += 5 + CHAR_SPACING;
+            currentX += 4 + CHAR_SPACING;
         }
     }
 
@@ -178,9 +162,12 @@ class DisplayService {
         const currentTime = this.getCurrentTime();
         await this.renderClock(display, currentTime, CLOCK_X, CLOCK_Y);
 
-        // Desenhar logo do Maracanã
-        if (this.maracanaData) {
-            this.drawImage(display, this.maracanaData, 8, 20);
+        // Desenhar imagem escolhida
+        if (config.image) {
+            const image = await this.loadImage(config.image);
+            if (image) {
+                this.drawImage(display, image, 0, 20);
+            }
         }
 
         // Renderizar time mandante na linha 5
@@ -259,7 +246,8 @@ class DisplayService {
             homeTeam: config.homeTeam || '',
             awayTeam: config.awayTeam || '',
             homeScore: config.homeScore !== undefined ? config.homeScore : '',
-            awayScore: config.awayScore !== undefined ? config.awayScore : ''
+            awayScore: config.awayScore !== undefined ? config.awayScore : '',
+            image: config.image !== undefined ? config.image : 'maracana.json'
         };
         return this.currentConfig;
     }
@@ -277,7 +265,7 @@ class DisplayService {
 
     // Inicializar serviço
     async initialize() {
-        await this.loadMaracana();
+        // await this.loadMaracana();
         console.log('DisplayService inicializado');
     }
 }
