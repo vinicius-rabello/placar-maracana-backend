@@ -1,8 +1,10 @@
 const express = require('express');
 const displayService = require('./services/displayService');
+const cors = require('cors');
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 // Endpoint para o front salvar config
 app.post('/config', (req, res) => {
