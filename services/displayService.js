@@ -175,7 +175,7 @@ class DisplayService {
             await this.renderText(display, config.homeTeam, 150, 21);
             const homeLogo = await this.loadImage(config.homeTeam);
             if (homeLogo) {
-                this.drawImage(display, homeLogo, 120, 19);
+                this.drawImage(display, homeLogo, 120, 0);
             }
         }
 
@@ -190,7 +190,7 @@ class DisplayService {
             await this.renderText(display, config.awayTeam, 150, 36);
             const awayLogo = await this.loadImage(config.awayTeam);
             if (awayLogo) {
-                this.drawImage(display, awayLogo, 120, 24);
+                this.drawImage(display, awayLogo, 120, 32);
             }
         }
 
